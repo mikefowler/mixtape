@@ -25,18 +25,22 @@ var dist = 'dist';
 
 var lrPort = 35731;
 
-var htmlFiles = 'app/**/*.html';
+var htmlFiles = './app/**/*.html';
 var htmlBuild = dist;
 
 var jsBuild = dist + '/js';
 
 var vendorFiles = [
   'node_modules/react/dist/react.js',
+  'node_modules/react-router/modules/index.js',
   'node_modules/es6ify/node_modules/traceur/bin/traceur-runtime.js'
 ];
 var vendorBuild = jsBuild + '/vendor';
 
-var requireFiles = './node_modules/react/dist/react.js';
+var requireFiles = [
+  './node_modules/react/dist/react.js',
+  './node_modules/react-router/modules/index.js'
+];
 
 // ----------------------------------------------------------------------------
 // Vendor Assets

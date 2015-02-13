@@ -1,11 +1,11 @@
 const React = require('react');
 
-export class Header extends React.Component {
-  render() {
+export var Header = React.createClass({
+  render: function() {
     return (
-      <header>
+      <div>
         <h1>Mixtape</h1>
-      </header>
+      </div>
     );
   }
-}
+});

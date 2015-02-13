@@ -1,8 +1,20 @@
 const React = require('react');
+const Router = require('react-router');
+const { Route, DefaultRoute, RouteHandler, Link } = Router;
 
-import { MixtapeApp } from './components/MixtapeApp.jsx'
+import { App } from './components/App.jsx';
+import { Home } from './components/Home.jsx';
+import { Login } from './components/Login.jsx';
 
-React.render(
-  <MixtapeApp />,
-  document.getElementById('mixtape')
-)
+// Set up routes
+
+var routes = (
+  <Route handler={App} path="/">
+    <Route name="login" handler={Login}/>
+    <DefaultRoute handler={Home}/>
+  </Route>
+);
+
+Router.run(routes, Router.HistoryLocation, function (Handler) {
+  React.render(<Handler/>, document.getElementById('mixtape'));
+});
