@@ -5,12 +5,14 @@ const { Route, DefaultRoute, RouteHandler, Link } = Router;
 import { App } from './components/App.jsx';
 import { Home } from './components/Home.jsx';
 import { Login } from './components/Login.jsx';
+import { Logout } from './components/Logout.jsx';
 
-// Set up routes
+import { Auth } from './lib/auth.js';
 
 var routes = (
-  <Route handler={App} path="/">
-    <Route name="login" handler={Login}/>
+  <Route name="app" handler={App} path="/">
+    <Route name="login" handler={Login} path="login"/>
+    <Route name="logout" handler={Logout} path="logout"/>
     <DefaultRoute handler={Home}/>
   </Route>
 );
