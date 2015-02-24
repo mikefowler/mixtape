@@ -1,13 +1,11 @@
-const React = require('react');
-const Router = require('react-router');
+import React from 'react';
+import Router from 'react-router';
+import App from './components/App.jsx';
+import Home from './components/Home.jsx';
+import Login from './components/Login.jsx';
+import Logout from './components/Logout.jsx';
+
 const { Route, DefaultRoute, RouteHandler, Link } = Router;
-
-import { App } from './components/App.jsx';
-import { Home } from './components/Home.jsx';
-import { Login } from './components/Login.jsx';
-import { Logout } from './components/Logout.jsx';
-
-import { Auth } from './lib/auth.js';
 
 var routes = (
   <Route name="app" handler={App} path="/">

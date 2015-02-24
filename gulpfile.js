@@ -13,8 +13,7 @@ var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 var watchify = require('watchify');
-var reactify = require('reactify');
-var es6ify = require('es6ify');
+var babelify = require('babelify');
 var livereload = require('gulp-livereload');
 var sass = require('gulp-sass');
 var path = require('path');
@@ -38,8 +37,7 @@ var jsBuild = dist + '/js';
 
 var vendorFiles = [
   'node_modules/react/dist/react.js',
-  'node_modules/react-router/modules/index.js',
-  'node_modules/es6ify/node_modules/traceur/bin/traceur-runtime.js'
+  'node_modules/react-router/modules/index.js'
 ];
 var vendorBuild = jsBuild + '/vendor';
 
@@ -83,11 +81,9 @@ gulp.task('css', function() {
 function compileScripts(watch) {
 
   var entryFile = './app/assets/javascripts/application.jsx';
-  es6ify.traceurOverrides = { experimental: true };
 
   var bundler = browserify(entryFile, {
     debug: true,
-    extensions: ['.jsx'],
     cache: {},
     packageCache: {},
     fullPaths: true
@@ -97,13 +93,16 @@ function compileScripts(watch) {
     bundler = watchify(bundler);
   }
 
-  // bundler.require(requireFiles);
-  bundler.transform(reactify);
-  bundler.transform(es6ify.configure(/\.js(x)?/));
+  bundler.transform(babelify);
 
   function handleErrors(err) {
+    console.log(err.message);
     var args = Array.prototype.slice.call(arguments);
-    var fileInfo = path.relative(__dirname, err.filename) + ':' + err.lineNumber;
+    var fileInfo = null;
+
+    if (err.filename) {
+      fileInfo = path.relative(__dirname, err.filename) + ':' + err.lineNumber;
+    }
 
     notify.onError({
       title: 'Compile Error',

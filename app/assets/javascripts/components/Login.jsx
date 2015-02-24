@@ -1,11 +1,9 @@
-const React = require('react');
-const Qs = require('qs');
+import React from 'react';
+import Qs from 'qs';
 
-import { auth } from '../lib/auth.js';
+const Login = React.createClass({
 
-export var Login = React.createClass({
-
-  componentDidMount: function() {
+  componentDidMount() {
     var params = Qs.parse(window.location.search.substring(1));
 
     if (params['access_token'] && window.opener && window.opener.setAuthenticationData) {
@@ -14,8 +12,10 @@ export var Login = React.createClass({
     }
   },
 
-  render: function() {
+  render() {
     return <div></div>;
   }
 
 });
+
+export default Login;

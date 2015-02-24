@@ -1,13 +1,32 @@
-const React = require('react');
-const Router = require('react-router');
+import React from 'react';
+import Router from 'react-router';
+import SessionActionCreators from '../actions/SessionActionCreators.js';
 
+const ReactPropTypes = React.PropTypes;
 const { Link } = Router;
 
-export var Header = React.createClass({
-  render: function() {
-    var authLink = this.props.loggedIn ?
-      <Link to="logout">Logout</Link> :
-      <a href="#">Log In</a>;
+let Header = React.createClass({
+
+  propTypes: {
+    isLoggedIn: ReactPropTypes.bool,
+    email: ReactPropTypes.string
+  },
+
+  login(e) {
+    e.preventDefault();
+    SessionActionCreators.login();
+  },
+
+  logout(e) {
+    e.preventDefault();
+    SessionActionCreators.logout();
+  },
+
+  render() {
+    var authLink = this.props.isLoggedIn ?
+      <a href="#" onClick={this.logout}>Logout</a> :
+      <a href="#" onClick={this.login}>Log In</a>;
+
     return (
       <header className="navbar navbar-default" role="banner">
         <div className="container">
@@ -21,4 +40,7 @@ export var Header = React.createClass({
       </header>
     );
   }
+
 });
+
+export default Header;

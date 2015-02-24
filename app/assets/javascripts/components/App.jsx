@@ -1,36 +1,46 @@
-const React = require('react');
-const Router = require('react-router');
+import React from 'react';
+import Router from 'react-router';
+import SessionStore from '../stores/SessionStore.js';
+import Header from './Header.jsx';
+
 const { RouteHandler } = Router;
 
-import { auth } from '../lib/auth.js';
-import { Header } from './Header.jsx';
+function getStateFromStores() {
+  return {
+    isLoggedIn: SessionStore.isLoggedIn(),
+    currentUser: SessionStore.getCurrentUser()
+  };
+}
 
-export var App = React.createClass({
+let App = React.createClass({
 
-  getInitialState: function() {
-    return {
-      loggedIn: auth.isLoggedIn()
-    };
+  getInitialState() {
+    return getStateFromStores();
   },
 
-  setStateOnAuth: function(loggedIn) {
-    this.setState({
-      loggedIn: loggedIn
-    });
+  componentDidMount() {
+    SessionStore.addChangeListener(this._onChange);
   },
 
-  componentWillMount: function() {
-    auth.onChange = this.setStateOnAuth;
+  componentWillUnmount() {
+    SessionStore.removeChangeListener(this._onChange);
   },
 
-  render: function() {
+  _onChange() {
+    this.setState(getStateFromStores());
+  },
+
+  render() {
     return (
       <div>
-        <Header loggedIn={this.state.loggedIn} />
+        <Header isLoggedIn={this.state.isLoggedIn} />
         <main className="container">
-          <RouteHandler loggedIn={this.state.loggedIn} />
+          <RouteHandler isLoggedIn={this.state.isLoggedIn} currentUser={this.state.currentUser} />
         </main>
       </div>
     );
   }
+
 });
+
+export default App;

@@ -1,15 +1,16 @@
-const React = require('react');
+import React from 'react';
+import SessionActionCreators from '../actions/SessionActionCreators.js';
 
-import { auth } from '../lib/auth.js';
+const Logout = React.createClass({
 
-export var Logout = React.createClass({
-
-  componentDidMount: function() {
-    auth.logout();
+  componentDidMount() {
+    SessionActionCreators.logout();
   },
 
-  render: function() {
+  render() {
     return <p>You are now logged out.</p>;
   }
 
 });
+
+export default Logout;
