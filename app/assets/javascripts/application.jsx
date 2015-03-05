@@ -1,14 +1,18 @@
+import 'whatwg-fetch';
 import React from 'react';
 import Router from 'react-router';
-import App from './components/App.jsx';
-import Home from './components/Home.jsx';
-import Login from './components/Login.jsx';
-import Logout from './components/Logout.jsx';
+
+import App from './components/App';
+import Home from './components/Home';
+import Login from './components/Login';
+import Logout from './components/Logout';
+import Playlists from './components/Playlists';
 
 const { Route, DefaultRoute, RouteHandler, Link } = Router;
 
 var routes = (
   <Route name="app" handler={App} path="/">
+    <Route name="playlists" handler={Playlists} path="playlists"/>
     <Route name="login" handler={Login} path="login"/>
     <Route name="logout" handler={Logout} path="logout"/>
     <DefaultRoute handler={Home}/>

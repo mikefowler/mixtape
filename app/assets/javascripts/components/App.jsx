@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'react-router';
-import SessionStore from '../stores/SessionStore.js';
-import Header from './Header.jsx';
+import SessionStore from '../stores/SessionStore';
+import Header from './Header';
 
 const { RouteHandler } = Router;
 

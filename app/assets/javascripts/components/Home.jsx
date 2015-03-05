@@ -1,6 +1,6 @@
 import React from 'react';
 import Router from 'react-router';
-import SessionActionCreators from '../actions/SessionActionCreators.js';
+import SessionActions from '../actions/SessionActions';
 
 const { Link } = Router;
 
@@ -36,7 +36,7 @@ let Home = React.createClass({
 
   login(e) {
     e.preventDefault();
-    SessionActionCreators.login();
+    SessionActions.requestLogin();
   }
 
 });

@@ -1,14 +1,13 @@
 import { EventEmitter } from 'eventemitter3';
-import AppDispatcher from '../dispatcher/AppDispatcher.js';
-import SessionConstants from '../constants/SessionConstants.js';
-import SessionActionCreators from '../actions/SessionActionCreators.js';
+import AppDispatcher from '../dispatcher/AppDispatcher';
+import ActionTypes from '../constants/ActionTypes';
+import UserActions from '../actions/UserActions';
 
 const CHANGE_EVENT = 'change';
 
 var _accessToken = localStorage.getItem('accessToken');
 var _refreshToken = localStorage.getItem('refreshToken');
 var _currentUser = JSON.parse(localStorage.getItem('currentUser'));
-var _errors = [];
 
 var SessionStore = Object.assign({}, EventEmitter.prototype, {
 
@@ -32,26 +31,25 @@ var SessionStore = Object.assign({}, EventEmitter.prototype, {
     return _currentUser;
   },
 
-  getErrors: function() {
-    return _errors;
+  getAccessToken: function() {
+    return _accessToken;
   }
 
 });
 
 SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
-  var action = payload.action;
 
-  switch (action.type) {
+  switch (payload.actionType) {
 
-    case SessionConstants.LOGIN_RESPONSE:
-      _accessToken = action.json.accessToken;
-      _refreshToken = action.json.refreshToken;
+    case ActionTypes.REQUEST_LOGIN_SUCCESS:
+      _accessToken = payload.json.accessToken;
+      _refreshToken = payload.json.refreshToken;
       localStorage.setItem('accessToken', _accessToken);
       localStorage.setItem('refreshToken', _refreshToken);
-      SessionActionCreators.getCurrentUser();
+      UserActions.requestCurrentUser();
       break;
 
-    case SessionConstants.LOGOUT:
+    case ActionTypes.REQUEST_LOGOUT:
       _accessToken = null;
       _refreshToken = null;
       _currentUser = null;
@@ -61,9 +59,9 @@ SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
       SessionStore.emitChange();
       break;
 
-    case SessionConstants.CURRENT_USER_RESPONSE:
-      _currentUser = action.json;
-      localStorage.setItem('currentUser', JSON.stringify(action.json));
+    case ActionTypes.REQUEST_CURRENT_USER_SUCCESS:
+      _currentUser = payload.json;
+      localStorage.setItem('currentUser', JSON.stringify(_currentUser));
       SessionStore.emitChange();
       break;
 

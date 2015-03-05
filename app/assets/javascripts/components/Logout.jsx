@@ -1,10 +1,10 @@
 import React from 'react';
-import SessionActionCreators from '../actions/SessionActionCreators.js';
+import SessionActions from '../actions/SessionActions';
 
 const Logout = React.createClass({
 
   componentDidMount() {
-    SessionActionCreators.logout();
+    SessionActions.requestLogout();
   },
 
   render() {

@@ -86,7 +86,8 @@ function compileScripts(watch) {
     debug: true,
     cache: {},
     packageCache: {},
-    fullPaths: true
+    fullPaths: true,
+    extensions: ['.jsx']
   });
 
   if (watch) {

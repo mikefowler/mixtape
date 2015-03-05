@@ -1,6 +1,6 @@
 import React from 'react';
 import Router from 'react-router';
-import SessionActionCreators from '../actions/SessionActionCreators.js';
+import SessionActions from '../actions/SessionActions';
 
 const ReactPropTypes = React.PropTypes;
 const { Link } = Router;
@@ -12,32 +12,37 @@ let Header = React.createClass({
     email: ReactPropTypes.string
   },
 
-  login(e) {
+  handleLogin(e) {
     e.preventDefault();
-    SessionActionCreators.login();
+    SessionActions.requestLogin();
   },
 
-  logout(e) {
+  handleLogout(e) {
     e.preventDefault();
-    SessionActionCreators.logout();
+    SessionActions.requestLogout();
   },
 
   render() {
-    var authLink = this.props.isLoggedIn ?
-      <a href="#" onClick={this.logout}>Logout</a> :
-      <a href="#" onClick={this.login}>Log In</a>;
-
     return (
       <header className="navbar navbar-default" role="banner">
         <div className="container">
           <div className="navbar-header">
             <Link to="app" className="navbar-brand">Mixtape</Link>
           </div>
-          <ul className="nav navbar-nav navbar-right">
-            <li>{authLink}</li>
-          </ul>
+          {this.renderNav()}
         </div>
       </header>
+    );
+  },
+
+  renderNav() {
+    return (
+      <ul className="nav navbar-nav navbar-right">
+        { this.props.isLoggedIn ? <li><Link to="playlists">Make a Mixtape</Link></li> : null }
+        <li>{ this.props.isLoggedIn ?
+          <a href="#" onClick={this.handleLogout}>Logout</a> :
+          <a href="#" onClick={this.handleLogin}>Login</a> }</li>
+      </ul>
     );
   }
 
