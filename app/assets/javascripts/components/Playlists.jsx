@@ -1,7 +1,10 @@
 import React from 'react';
+import Router from 'react-router';
 import PlaylistStore from '../stores/PlaylistStore';
 import PlaylistActions from '../actions/PlaylistActions';
 import Playlist from './Playlist';
+
+let { Navigation } = Router;
 
 function getStateFromStores() {
   return {
@@ -11,8 +14,17 @@ function getStateFromStores() {
 
 let Playlists = React.createClass({
 
+  mixins: [Navigation],
+
   getInitialState() {
     return getStateFromStores();
+  },
+
+  componentWillMount() {
+    if (!this.props.isLoggedIn) {
+      this.transitionTo('app');
+      return;
+    }
   },
 
   componentDidMount() {

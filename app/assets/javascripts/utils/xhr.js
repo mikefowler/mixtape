@@ -1,37 +1,7 @@
 const API_URL = 'https://api.spotify.com/v1';
 
-const token = () => {
-  return localStorage.getItem('accessToken');
-};
-
-const handle401 = (response) => {
-  let url = response.url;
-
-  return new Promise(function(resolve, reject) {
-
-    let refreshToken = localStorage.getItem('refreshToken');
-
-    let onSuccess = (response) => {
-      localStorage.setItem('accessToken', response.access_token);
-      xhr(url).then(resolve, reject);
-    };
-
-    let onFailure = (response) => {
-      // no-op
-    };
-
-    fetch(`/auth/refresh_token?refresh_token=${refreshToken}`)
-      .then(status)
-      .then(json)
-      .then(onSuccess, onFailure);
-
-  });
-};
-
 const status = (response) => {
-  if (response.status === 401) {
-    return handle401(response);
-  } else if (response.status >= 200 && response.status < 300) {
+  if (response.status >= 200 && response.status < 300) {
     return Promise.resolve(response);
   } else {
     return Promise.reject(new Error(response.statusText));
@@ -46,21 +16,58 @@ const json = (response) => {
   }
 };
 
-const xhr = (url, params = {}) => {
+const handle401 = (resolve, reject, path) => {
+
+  let refreshToken = localStorage.getItem('refreshToken');
+
+  let onSuccess = (response) => {
+    localStorage.setItem('accessToken', response.access_token);
+    xhr(path).then(resolve, reject);
+  };
+
+  let onError = () => {
+    // no-op
+  };
+
+  fetch(`/auth/refresh_token?refresh_token=${refreshToken}`)
+    .then(status)
+    .then(json)
+    .then(onSuccess, onError);
+
+};
+
+const handleError = (response, resolve, reject, path) => {
+  if (response.status === 401) {
+    handle401(resolve, reject, path);
+    return;
+  }
+
+  reject(new Error(response.statusText));
+};
+
+const xhr = (path, params = {}) => {
+  let accessToken = localStorage.getItem('accessToken');
+
   params = Object.assign({
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token()}`
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${accessToken}`
     }
   }, params);
 
-  if (url.indexOf(API_URL) !== 0) {
-    url = API_URL + url;
-  }
+  return new Promise((resolve, reject) => {
+    fetch(API_URL + path, params).then(function(response) {
+      var responseData;
 
-  return fetch(url, params)
-    .then(status)
-    .then(json);
+      if (response.status >= 400) {
+        handleError(response, resolve, reject, path);
+      } else {
+        responseData = json(response);
+        resolve(responseData);
+      }
+    });
+  });
+
 };
 
 export default xhr;

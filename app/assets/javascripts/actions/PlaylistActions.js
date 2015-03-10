@@ -9,6 +9,7 @@ const PlaylistActions = {
     console.log('PlaylistActions::requestUserPlaylists');
     let userId = SessionStore.getCurrentUser().id;
     PlaylistApiUtils.fetchPlaylistsForUser(userId).then((playlists) => {
+      console.log('fetched playlists', playlists);
       PlaylistServerActions.receivePlaylists(playlists);
     }).catch(logError);
   }

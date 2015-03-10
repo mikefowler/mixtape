@@ -3,9 +3,11 @@ import Router from 'react-router';
 import SessionActions from '../actions/SessionActions';
 
 const ReactPropTypes = React.PropTypes;
-const { Link } = Router;
+const { Link, Navigation } = Router;
 
 let Header = React.createClass({
+
+  mixins: [Navigation],
 
   propTypes: {
     isLoggedIn: ReactPropTypes.bool,
@@ -19,6 +21,7 @@ let Header = React.createClass({
 
   handleLogout(e) {
     e.preventDefault();
+    this.transitionTo('app');
     SessionActions.requestLogout();
   },
 

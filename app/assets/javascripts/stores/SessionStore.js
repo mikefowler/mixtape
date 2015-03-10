@@ -29,10 +29,6 @@ var SessionStore = Object.assign({}, EventEmitter.prototype, {
 
   getCurrentUser: function() {
     return _currentUser;
-  },
-
-  getAccessToken: function() {
-    return _accessToken;
   }
 
 });
