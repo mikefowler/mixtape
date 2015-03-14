@@ -47,6 +47,11 @@ const handleError = (response, resolve, reject, path) => {
 
 const xhr = (path, params = {}) => {
   let accessToken = localStorage.getItem('accessToken');
+  let url = path;
+
+  if (url.indexOf(API_URL) !== 0) {
+    url = API_URL + path;
+  }
 
   params = Object.assign({
     headers: {
@@ -56,7 +61,7 @@ const xhr = (path, params = {}) => {
   }, params);
 
   return new Promise((resolve, reject) => {
-    fetch(API_URL + path, params).then(function(response) {
+    fetch(url, params).then(function(response) {
       var responseData;
 
       if (response.status >= 400) {

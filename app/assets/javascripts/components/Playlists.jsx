@@ -1,14 +1,14 @@
 import React from 'react';
 import Router from 'react-router';
-import PlaylistStore from '../stores/PlaylistStore';
+import PlaylistByUserStore from '../stores/PlaylistsByUserStore';
 import PlaylistActions from '../actions/PlaylistActions';
 import Playlist from './Playlist';
 
 let { Navigation } = Router;
 
-function getStateFromStores() {
+function getStateFromStores(props) {
   return {
-    playlists: PlaylistStore.getAll()
+    playlists: PlaylistByUserStore.getPlaylists(props.currentUser.id)
   };
 }
 
@@ -17,7 +17,7 @@ let Playlists = React.createClass({
   mixins: [Navigation],
 
   getInitialState() {
-    return getStateFromStores();
+    return getStateFromStores(this.props);
   },
 
   componentWillMount() {
@@ -28,31 +28,43 @@ let Playlists = React.createClass({
   },
 
   componentDidMount() {
-    PlaylistStore.addChangeListener(this._onChange);
-    PlaylistActions.requestUserPlaylists();
+    PlaylistByUserStore.addChangeListener(this._onChange);
+    PlaylistActions.requestPlaylistPage(this.props.currentUser.id, true);
   },
 
   componentWillUnmount() {
-    PlaylistStore.removeChangeListener(this._onChange);
+    PlaylistByUserStore.removeChangeListener(this._onChange);
   },
 
   render() {
-    let playlists = [];
-
-    for (var key in this.state.playlists) {
-      let playlist = this.state.playlists[key];
-      playlists.push(<li key={playlist.id}>{playlist.name}</li>);
-    }
+    const uid = this.props.currentUser.id;
+    const { playlists } = this.state;
+    const isEmpty = playlists.length === 0;
+    const isFetching = PlaylistByUserStore.isExpectingPage(uid);
+    const isLastPage = PlaylistByUserStore.isLastPage(uid)
 
     return (
-      <ul>
-        {playlists}
-      </ul>
+      <div>
+        {playlists.map((playlist, index) =>
+          <Playlist key={playlist.id} playlist={playlist} />
+        )}
+
+        {!isEmpty && (isFetching || !isLastPage) &&
+          <button onClick={this.handleLoadMoreClick} disabled={isFetching}>
+            {isFetching ? 'Loading…' : 'Load more'}
+          </button>
+        }
+      </div>
     );
   },
 
+  handleLoadMoreClick() {
+    const uid = this.props.currentUser.id;
+    PlaylistActions.requestPlaylistPage(uid);
+  },
+
   _onChange() {
-    this.setState(getStateFromStores());
+    this.setState(getStateFromStores(this.props));
   }
 
 });

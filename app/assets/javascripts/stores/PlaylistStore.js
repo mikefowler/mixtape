@@ -1,25 +1,12 @@
-import { EventEmitter } from 'eventemitter3';
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import ActionTypes from '../constants/ActionTypes';
+import { createStore, mergeIntoBag } from '../utils/StoreUtils';
 
 const CHANGE_EVENT = 'change';
 
-var _playlists = {};
+const _playlists = {};
 
-var PlaylistStore = Object.assign({}, EventEmitter.prototype, {
-
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
-  },
-
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  },
-
+const PlaylistStore = createStore({
   get(id) {
     return _playlists[id];
   },
@@ -27,27 +14,19 @@ var PlaylistStore = Object.assign({}, EventEmitter.prototype, {
   getAll() {
     return _playlists;
   }
-
 });
 
 PlaylistStore.dispatchToken = AppDispatcher.register(function(payload) {
-  switch(payload.actionType) {
+  const { action } = payload;
+  const { response } = action;
+  let items = response && response.items;
+  let normalizedItems = {};
 
-    case ActionTypes.REQUEST_USER_PLAYLISTS_SUCCESS:
-      let data = payload.json;
-      data.items.forEach(function(item) {
-        if (!_playlists.hasOwnProperty(item.id)) {
-          _playlists[item.id] = item;
-        }
-      });
-      PlaylistStore.emitChange();
-      break;
-
-    default:
-      // no-op
+  if (items) {
+    items.forEach(i => normalizedItems[i.id] = i);
+    mergeIntoBag(_playlists, normalizedItems);
+    PlaylistStore.emitChange();
   }
-
-  return true;
 });
 
 export default PlaylistStore;

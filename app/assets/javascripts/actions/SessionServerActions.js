@@ -5,9 +5,9 @@ const SessionServerActions = {
 
   receiveLogin: function(response) {
     console.log('SessionServerActions::receiveLogin');
-    AppDispatcher.dispatch({
-      actionType: ActionTypes.REQUEST_LOGIN_SUCCESS,
-      json: response
+    AppDispatcher.handleServerAction({
+      type: ActionTypes.REQUEST_LOGIN_SUCCESS,
+      response: response
     });
   }
 

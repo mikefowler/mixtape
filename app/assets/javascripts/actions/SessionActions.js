@@ -18,8 +18,8 @@ const SessionActions = {
 
   requestLogout: function() {
     console.log('SessionActions::requestLogout');
-    AppDispatcher.dispatch({
-      actionType: ActionTypes.REQUEST_LOGOUT
+    AppDispatcher.handleViewAction({
+      type: ActionTypes.REQUEST_LOGOUT
     });
   }
 

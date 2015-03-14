@@ -5,9 +5,9 @@ const UserServerActions = {
 
   receiveCurrentUser: function(user) {
     console.log('UserServerActions::receiveCurrentUser');
-    AppDispatcher.dispatch({
-      actionType: ActionTypes.REQUEST_CURRENT_USER_SUCCESS,
-      json: user
+    AppDispatcher.handleServerAction({
+      type: ActionTypes.REQUEST_CURRENT_USER_SUCCESS,
+      response: user
     });
   }
 

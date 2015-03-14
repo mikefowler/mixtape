@@ -3,12 +3,16 @@ import AppDispatcher from '../dispatcher/AppDispatcher';
 
 const PlaylistServerActions = {
 
-  receivePlaylists: function(playlists) {
-    console.log('PlaylistServerActions::receivePlaylists');
-    AppDispatcher.dispatch({
-      actionType: ActionTypes.REQUEST_USER_PLAYLISTS_SUCCESS,
-      json: playlists
+  handlePlaylistPageSuccess: function(uid, response) {
+    AppDispatcher.handleServerAction({
+      type: ActionTypes.REQUEST_USER_PLAYLISTS_SUCCESS,
+      uid: uid,
+      response: response
     });
+  },
+
+  handlePlaylistPageError: function(login, err) {
+
   }
 
 };

@@ -1,45 +1,32 @@
-import { EventEmitter } from 'eventemitter3';
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import ActionTypes from '../constants/ActionTypes';
 import UserActions from '../actions/UserActions';
-
-const CHANGE_EVENT = 'change';
+import { createStore } from '../utils/StoreUtils';
 
 var _accessToken = localStorage.getItem('accessToken');
 var _refreshToken = localStorage.getItem('refreshToken');
 var _currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-var SessionStore = Object.assign({}, EventEmitter.prototype, {
-
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
-  },
-
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  },
-
-  isLoggedIn: function() {
+var SessionStore = createStore({
+  isLoggedIn() {
     return _currentUser ? true : false;
   },
 
-  getCurrentUser: function() {
+  getCurrentUser() {
     return _currentUser;
   }
-
 });
 
 SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
 
-  switch (payload.actionType) {
+  const { action } = payload;
+  const { type, response } = action;
+
+  switch (type) {
 
     case ActionTypes.REQUEST_LOGIN_SUCCESS:
-      _accessToken = payload.json.accessToken;
-      _refreshToken = payload.json.refreshToken;
+      _accessToken = response.accessToken;
+      _refreshToken = response.refreshToken;
       localStorage.setItem('accessToken', _accessToken);
       localStorage.setItem('refreshToken', _refreshToken);
       UserActions.requestCurrentUser();
@@ -56,7 +43,7 @@ SessionStore.dispatchToken = AppDispatcher.register(function(payload) {
       break;
 
     case ActionTypes.REQUEST_CURRENT_USER_SUCCESS:
-      _currentUser = payload.json;
+      _currentUser = response;
       localStorage.setItem('currentUser', JSON.stringify(_currentUser));
       SessionStore.emitChange();
       break;
