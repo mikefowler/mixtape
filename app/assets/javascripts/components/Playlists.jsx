@@ -3,42 +3,44 @@ import Router from 'react-router';
 import PlaylistByUserStore from '../stores/PlaylistsByUserStore';
 import PlaylistActions from '../actions/PlaylistActions';
 import Playlist from './Playlist';
+import connectToStores from '../utils/connectToStores';
 
+const { PropTypes } = React;
 let { Navigation } = Router;
 
-function getStateFromStores(props) {
-  return {
-    playlists: PlaylistByUserStore.getPlaylists(props.currentUser.id)
-  };
+function parseUsername(params) {
+  let { session } = params;
+  return session.currentUser && session.currentUser.id;
 }
 
 let Playlists = React.createClass({
 
   mixins: [Navigation],
 
-  getInitialState() {
-    return getStateFromStores(this.props);
+  propTypes: {
+    session: PropTypes.shape({
+      isLoggedIn: PropTypes.bool,
+      currentUser: PropTypes.object.isRequired
+    })
   },
 
   componentWillMount() {
-    if (!this.props.isLoggedIn) {
+    if (!this.props.session.isLoggedIn) {
       this.transitionTo('app');
       return;
     }
   },
 
   componentDidMount() {
-    PlaylistByUserStore.addChangeListener(this._onChange);
-    PlaylistActions.requestPlaylistPage(this.props.currentUser.id, true);
-  },
-
-  componentWillUnmount() {
-    PlaylistByUserStore.removeChangeListener(this._onChange);
+    let username = parseUsername(this.props);
+    PlaylistActions.requestPlaylistPage(username, true);
   },
 
   render() {
-    const uid = this.props.currentUser.id;
-    const { playlists } = this.state;
+    const { session, playlists } = this.props;
+    const { currentUser } = session;
+
+    const uid = currentUser.id;
     const isEmpty = playlists.length === 0;
     const isFetching = PlaylistByUserStore.isExpectingPage(uid);
     const isLastPage = PlaylistByUserStore.isLastPage(uid)
@@ -59,14 +61,25 @@ let Playlists = React.createClass({
   },
 
   handleLoadMoreClick() {
-    const uid = this.props.currentUser.id;
-    PlaylistActions.requestPlaylistPage(uid);
-  },
-
-  _onChange() {
-    this.setState(getStateFromStores(this.props));
+    const username = parseUsername(this.props);
+    PlaylistActions.requestPlaylistPage(username);
   }
 
 });
 
-export default Playlists;
+function pickProps(params) {
+  return params;
+}
+
+function getState(params) {
+  const username = parseUsername(params);
+  const playlists = PlaylistByUserStore.getPlaylists(username);
+
+  return { playlists };
+}
+
+export default connectToStores(Playlists,
+  [PlaylistByUserStore],
+  pickProps,
+  getState
+);

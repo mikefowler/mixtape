@@ -2,7 +2,7 @@ import React from 'react';
 import Router from 'react-router';
 import SessionActions from '../actions/SessionActions';
 
-const ReactPropTypes = React.PropTypes;
+const { PropTypes } = React;
 const { Link, Navigation } = Router;
 
 let Header = React.createClass({
@@ -10,8 +10,10 @@ let Header = React.createClass({
   mixins: [Navigation],
 
   propTypes: {
-    isLoggedIn: ReactPropTypes.bool,
-    email: ReactPropTypes.string
+    session: PropTypes.shape({
+      isLoggedIn: PropTypes.bool,
+      currentUser: PropTypes.object
+    }).isRequired
   },
 
   handleLogin(e) {
@@ -39,16 +41,16 @@ let Header = React.createClass({
   },
 
   renderNav() {
+    let currentUser = this.props.session.currentUser;
+
     return (
       <ul className="nav navbar-nav navbar-right">
-        { this.props.isLoggedIn ? <li><Link to="playlists">Make a Mixtape</Link></li> : null }
-        <li>{ this.props.isLoggedIn ?
-          <a href="#" onClick={this.handleLogout}>Logout</a> :
-          <a href="#" onClick={this.handleLogin}>Login</a> }</li>
+        {currentUser && <li><Link to="playlists">Make a Mixtape</Link></li>}
+        {currentUser && <li><a href="#" onClick={this.handleLogout}>Logout <small>({currentUser.id})</small></a></li>}
+        {!currentUser && <li><a href="#" onClick={this.handleLogin}>Login</a></li>}
       </ul>
     );
   }
-
 });
 
 export default Header;

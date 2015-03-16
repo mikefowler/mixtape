@@ -2,45 +2,38 @@ import React from 'react';
 import Router from 'react-router';
 import SessionStore from '../stores/SessionStore';
 import Header from './Header';
+import connectToStores from '../utils/connectToStores';
 
 const { RouteHandler } = Router;
 
-function getStateFromStores() {
-  return {
-    isLoggedIn: SessionStore.isLoggedIn(),
-    currentUser: SessionStore.getCurrentUser()
-  };
-}
-
 let App = React.createClass({
-
-  getInitialState() {
-    return getStateFromStores();
-  },
-
-  componentDidMount() {
-    SessionStore.addChangeListener(this._onChange);
-  },
-
-  componentWillUnmount() {
-    SessionStore.removeChangeListener(this._onChange);
-  },
-
-  _onChange() {
-    this.setState(getStateFromStores());
-  },
-
   render() {
     return (
       <div>
-        <Header isLoggedIn={this.state.isLoggedIn} />
+        <Header session={this.props.session} />
         <main className="container">
-          <RouteHandler isLoggedIn={this.state.isLoggedIn} currentUser={this.state.currentUser} />
+          <RouteHandler session={this.props.session} />
         </main>
       </div>
     );
   }
-
 });
 
-export default App;
+function pickProps(props) {
+  return props;
+}
+
+function getState(props) {
+  let session = {
+    isLoggedIn: SessionStore.isLoggedIn(),
+    currentUser: SessionStore.getCurrentUser()
+  };
+
+  return { session };
+}
+
+export default connectToStores(App,
+  [SessionStore],
+  pickProps,
+  getState
+);
