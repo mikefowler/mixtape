@@ -20,6 +20,7 @@ export default function connectToStores(Component, stores, pickProps, getState) 
     },
 
     componentWillReceiveProps(nextProps) {
+      console.log('componentWillReceiveProps', this.props, nextProps);
       if (!shallowEqual(pickProps(nextProps), pickProps(this.props))) {
         this.setState(this.getStateFromStores(this.props));
       }

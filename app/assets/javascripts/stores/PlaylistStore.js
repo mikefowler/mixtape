@@ -17,14 +17,12 @@ const PlaylistStore = createStore({
 });
 
 PlaylistStore.dispatchToken = AppDispatcher.register(function(payload) {
-  const { action } = payload;
-  const { response } = action;
-  let items = response && response.items;
-  let normalizedItems = {};
+  const { response } = payload.action;
+  const entities = response && response.entities;
+  let fetchedPlaylists = entities && entities.playlists;
 
-  if (items) {
-    items.forEach(i => normalizedItems[i.id] = i);
-    mergeIntoBag(_playlists, normalizedItems);
+  if (fetchedPlaylists) {
+    mergeIntoBag(_playlists, fetchedPlaylists);
     PlaylistStore.emitChange();
   }
 });

@@ -8,6 +8,7 @@ class PaginatedList {
     this._pageCount = 0;
     this._nextPageUrl = null;
     this._isExpectingPage = false;
+    this._total = 0;
   }
 
   getIds() {
@@ -16,6 +17,10 @@ class PaginatedList {
 
   getPageCount() {
     return this._pageCount;
+  }
+
+  getTotal() {
+    return this._total;
   }
 
   isExpectingPage() {
@@ -48,11 +53,10 @@ class PaginatedList {
     invariant(this._isExpectingPage, 'Cannot call cancelPage without prior expectPage call.');
   }
 
-  receivePage(response) {
+  receivePage(newIds, nextPageUrl) {
     invariant(this._isExpectingPage, 'Cannot call receivePage without prior expectPage call.');
 
-    let nextPageUrl = response.next || null;
-    let newIds = response.items ? response.items.map(r => r.id) : null;
+    console.log('receivePage', arguments);
 
     if (newIds.length) {
       this._ids = union(this._ids, newIds);

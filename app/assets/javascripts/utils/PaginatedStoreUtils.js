@@ -96,7 +96,9 @@ export function createListActionHandler(actions) {
       break;
 
     case successAction:
-      list.receivePage(action.response);
+      list.receivePage(
+        action.response.result,
+        action.response.next);
       emitChange();
       break;
     }

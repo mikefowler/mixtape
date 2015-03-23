@@ -117,7 +117,7 @@ function compileScripts(watch) {
       .on('error', handleErrors)
       .pipe(source('app.js'))
       .pipe(buffer())
-      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(sourcemaps.init({ loadMaps: true, sourceRoot: '../../' }))
       .pipe(uglify())
       .pipe(sourcemaps.write('./'))
       .pipe(gulp.dest(jsBuild))

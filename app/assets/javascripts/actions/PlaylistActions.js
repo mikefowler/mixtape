@@ -5,31 +5,40 @@ import PlaylistApiUtils from '../utils/PlaylistApiUtils';
 import PlaylistServerActions from './PlaylistServerActions';
 import ActionTypes from '../constants/ActionTypes';
 import logError from '../utils/logError';
+import { normalizePlaylistResponse } from '../utils/ApiUtils';
 
 const PlaylistActions = {
 
-  requestPlaylist(id) {
+  requestPlaylist(username, id) {
+    AppDispatcher.handleViewAction({
+      type: ActionTypes.REQUEST_PLAYLIST
+    });
 
+    PlaylistApiUtils.requestPlaylist(username, id).then((res) => {
+      const response = normalizePlaylistResponse(res);
+      PlaylistServerActions.handlePlaylistSuccess(response);
+    });
   },
 
-  requestPlaylistPage(uid, isInitialRequest) {
-    if (PlaylistsByUserStore.isExpectingPage(uid) ||
-        PlaylistsByUserStore.isLastPage(uid)) {
+  requestPlaylistPage(username, isInitialRequest) {
+    if (PlaylistsByUserStore.isExpectingPage(username) ||
+        PlaylistsByUserStore.isLastPage(username)) {
       return;
     }
 
-    if (isInitialRequest && PlaylistsByUserStore.getPageCount(uid) > 0) {
+    if (isInitialRequest && PlaylistsByUserStore.getPageCount(username) > 0) {
       return;
     }
 
     AppDispatcher.handleViewAction({
       type: ActionTypes.REQUEST_USER_PLAYLISTS,
-      uid: uid
+      uid: username
     });
 
-    const nextPageUrl = PlaylistsByUserStore.getNextPageUrl(uid);
-    PlaylistApiUtils.requestPlaylistPage(uid, nextPageUrl).then((response) => {
-      PlaylistServerActions.handlePlaylistPageSuccess(uid, response);
+    const nextPageUrl = PlaylistsByUserStore.getNextPageUrl(username);
+    PlaylistApiUtils.requestPlaylistPage(username, nextPageUrl).then((res) => {
+      const response = normalizePlaylistResponse(res);
+      PlaylistServerActions.handlePlaylistPageSuccess(username, response);
     });
   }
 

@@ -45,7 +45,7 @@ let Header = React.createClass({
 
     return (
       <ul className="nav navbar-nav navbar-right">
-        {currentUser && <li><Link to="playlists">Make a Mixtape</Link></li>}
+        {currentUser && <li><Link to="create">Make a Mixtape</Link></li>}
         {currentUser && <li><a href="#" onClick={this.handleLogout}>Logout <small>({currentUser.id})</small></a></li>}
         {!currentUser && <li><a href="#" onClick={this.handleLogin}>Login</a></li>}
       </ul>
